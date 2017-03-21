@@ -1,11 +1,10 @@
 import Problems.Problem;
 import Problems.ProblemA;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
-/**
- * Created by ajalv on 21/03/2017.
- */
+
 public class Codejam {
     public static void main(String[] args) {
 
@@ -17,9 +16,19 @@ public class Codejam {
             String outputPath = inputPath.replace("in", "out");
 
             ArrayList<String> inputData = dm.getData(inputPath);
-            Problem problem = new ProblemA(problemName);
-            ArrayList<String> outputData = problem.Resolve(inputData);
-            dm.printFile(outputData, outputPath);
+
+            try{
+
+                Class<?> clazz = Class.forName("Problems." + problemName);
+                Constructor<?> constructor = clazz.getConstructor(String.class);
+                Object problemInstance = constructor.newInstance(problemName);
+
+                ArrayList<String> outputData =  ((Problem)problemInstance).Resolve(inputData);
+                dm.printFile(outputData, outputPath);
+            }
+            catch (Exception ex){
+                System.out.println("Problem not found");
+            }
         }
         else{
             System.out.println("Please enter problemName and inputPath parameters");
